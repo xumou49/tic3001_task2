@@ -1,5 +1,6 @@
 from flask import Flask
 from flask_mongoengine import MongoEngine
+from flask_cors import CORS
 from config import BaseConfig
 
 
@@ -14,6 +15,7 @@ def init_app(config_obj=BaseConfig):
 
 
 def configure_extensions(app):
+    CORS(app)
     return MongoEngine(app)
 
 

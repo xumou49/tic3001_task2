@@ -10,6 +10,7 @@ flask-login = "*"
 mongoengine = "==0.24.2"
 pymongo = "==3.12.3"
 pytest = "*"
+flask-cors = "*"
 
 [dev-packages]
 pytest = "*"

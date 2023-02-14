@@ -1,5 +1,6 @@
 import datetime
 from mongoengine import Document, DateTimeField
+from datetime import datetime
 
 
 class BaseDocument(Document):
@@ -22,5 +23,7 @@ class BaseDocument(Document):
                 res[k] = v
         if 'id' in res:
             res["id"] = str(self["id"])
+        if 'birthday' in res:
+            res['birthday'] = res['birthday'].strftime('%Y-%m-%d')
         return res
 
