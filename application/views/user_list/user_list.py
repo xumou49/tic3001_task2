@@ -1,11 +1,13 @@
 from application.services import BackendError
-from application.services.user_list import validate_create_user, validate_update_user, generate_fake_users
+from application.services.auth import user_logged_in
+from application.services.user_list import validate_create_user, validate_update_user
 from application.views.user_list import user_list_bp
 from application.models import User
 from flask import jsonify, request
 
 
 @user_list_bp.route('/users', methods=['GET'])
+@user_logged_in(require_claims="view:user")
 def get_users():
 
     if not User.objects():
@@ -18,6 +20,7 @@ def get_users():
 
 
 @user_list_bp.route('/users/<uid>', methods=['GET'])
+@user_logged_in(require_claims="view:user")
 def get_user(uid):
     try:
         if u := User.objects(id=uid).first():
@@ -30,6 +33,7 @@ def get_user(uid):
 
 
 @user_list_bp.route('/users', methods=['POST'])
+@user_logged_in(require_claims="edit:user")
 def create_user():
     try:
         validate_create_user(request.json.get('data', request.json))
@@ -41,6 +45,7 @@ def create_user():
 
 
 @user_list_bp.route('/users/<uid>', methods=['PUT'])
+@user_logged_in(require_claims="edit:user")
 def update_user(uid):
     if u := User.objects(id=uid).first():
         try:
@@ -53,6 +58,7 @@ def update_user(uid):
 
 
 @user_list_bp.route('/users/<uid>', methods=['DELETE'])
+@user_logged_in(require_claims="delete:user")
 def delete_item(uid):
     if u := User.objects(id=uid).first():
         u.delete()
