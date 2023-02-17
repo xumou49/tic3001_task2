@@ -1,5 +1,5 @@
 from application.services import BackendError
-from application.services.user_list import validate_create_user, validate_update_user
+from application.services.user_list import validate_create_user, validate_update_user, generate_fake_users
 from application.views.user_list import user_list_bp
 from application.models import User
 from flask import jsonify, request
@@ -7,6 +7,9 @@ from flask import jsonify, request
 
 @user_list_bp.route('/users', methods=['GET'])
 def get_users():
+
+    if not User.objects():
+        _ = [User(**u).save() for u in generate_fake_users()]
     return jsonify({
         'users': [
             u.to_dict() for u in User.objects()
@@ -29,7 +32,7 @@ def get_user(uid):
 @user_list_bp.route('/users', methods=['POST'])
 def create_user():
     try:
-        validate_create_user(request.json)
+        validate_create_user(request.json.get('data', None))
     except BackendError as e:
         return jsonify({'error_message': str(e)}), 404
     return jsonify({

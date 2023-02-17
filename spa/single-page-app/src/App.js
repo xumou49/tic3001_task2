@@ -2,21 +2,21 @@ import logo from './logo.svg';
 import './App.css';
 // import {Table, Button} from 'antd';
 import axios from 'axios';
-import React, { useState, useEffect, useRef, useContext } from 'react';
-import { Table, Popconfirm, Button, Form, Input, Typography, InputNumber } from 'antd';
-
-
+import React, {useState, useEffect, useRef, useContext} from 'react';
+import {Table, Popconfirm, Button, Form, Input, Typography, InputNumber} from 'antd';
+import { faker } from '@faker-js/faker';
+const a = faker.name.fullName()
 const EditableCell = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-}) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
+                          editing,
+                          dataIndex,
+                          title,
+                          inputType,
+                          record,
+                          index,
+                          children,
+                          ...restProps
+                      }) => {
+    const inputNode = inputType === 'number' ? <InputNumber/> : <Input/>;
     return (
         <td {...restProps}>
             {editing ? (
@@ -48,6 +48,7 @@ const App = () => {
     useEffect(() => {
         axios.get('http://127.0.0.1:5000/api/user-list/users')
             .then(res => {
+                console.log("hello")
                 setData(res.data['users'].map(u => ({
                     key: u.id,
                     name: u.name,
@@ -90,7 +91,34 @@ const App = () => {
     const cancel = () => {
         setEditingKey('');
     };
+    const handleAdd = async () => {
+        const addUser = (user) => {
+            return axios.post('http://127.0.0.1:5000/api/user-list/users', {
+                data: {
+                    ...user
+                }
+            })
+                .then(response => response.data)
+                .catch(error => {
+                    console.error('Error creating resource:', error);
+                });
+        }
+        const new_data = () => {
+            const age = faker.datatype.number({min: 18, max: 100});
+            return {
+                name: faker.name.fullName(),
+                age: age,
+                address: faker.address.streetAddress(),
+                birthday: faker.date.past(age),
+                email: faker.internet.email(),
+                university: 'NUS',
+                postcode: faker.address.zipCode(),
+            }
+        }
 
+        const added = await addUser(new_data())
+        setData([...data, added.users]);
+    };
     const save = async (key) => {
         try {
             const row = await form.validateFields();
@@ -117,7 +145,17 @@ const App = () => {
             console.log('Validate Failed:', errInfo);
         }
     };
-
+    const handleDelete = (key) => {
+        axios.delete(`http://127.0.0.1:5000/api/user-list/users/${key}`)
+            .then(response => {
+                console.log('Resource deleted successfully');
+            })
+            .catch(error => {
+                console.error('Error deleting resource:', error);
+            });
+        const newData = data.filter((item) => item.key !== key);
+        setData(newData);
+    };
     const columns = [
         {
             title: 'Name', width: 100, dataIndex: 'name', key: 'name', fixed: 'left', editable: true,
@@ -142,7 +180,7 @@ const App = () => {
             title: 'Postcode', dataIndex: 'postcode', key: 'postcode', editable: true,
         },
         {
-            title: 'Edit', key: 'edit', dataIndex: 'edit', fixed: 'right', width: 200,
+            title: 'Edit', key: 'edit', dataIndex: 'edit', fixed: 'right', width: 100,
             render: (_, record) => {
                 const editable = isEditing(record);
                 return editable ? (
@@ -166,6 +204,18 @@ const App = () => {
                 );
             },
         },
+        {
+            title: 'Delete',
+            key: 'edit',
+            dataIndex: 'Delete',
+            width: 100,
+            render: (_, record) =>
+                data.length >= 1 ? (
+                    <Popconfirm title="Sure to delete?" onConfirm={() => handleDelete(record.key)}>
+                        <a>Delete</a>
+                    </Popconfirm>
+                ) : null,
+        },
     ];
     const mergedColumns = columns.map((col) => {
         if (!col.editable) {
@@ -184,6 +234,15 @@ const App = () => {
     });
     return (
         <div>
+            <Button
+                onClick={handleAdd}
+                type="primary"
+                style={{
+                    marginBottom: 16,
+                }}
+            >
+                Add a row
+            </Button>
             <Form form={form} component={false}>
                 <Table
                     components={{
@@ -200,7 +259,7 @@ const App = () => {
                     pagination={{
                         onChange: cancel,
                     }}
-                // scroll={{x: 1300,}}
+                    // scroll={{x: 1300,}}
                 />
             </Form>
         </div>

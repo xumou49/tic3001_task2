@@ -11,6 +11,7 @@ def init_app(config_obj=BaseConfig):
 
     from application.views.user_list import user_list_bp
     flask_app.register_blueprint(user_list_bp)
+
     return flask_app, db
 
 

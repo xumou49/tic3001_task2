@@ -1,6 +1,5 @@
 import datetime
 from mongoengine import Document, DateTimeField
-from datetime import datetime
 
 
 class BaseDocument(Document):

@@ -1,4 +1,5 @@
 import re
+from faker import Faker
 from application.services.exceptions import BackendError
 
 
@@ -30,7 +31,7 @@ def validate_user(user, is_update=False):
         raise BackendError("Invalid birthday format, example format: 2000-01-01")
     if not re.search(r"^[^@]+@[^.]+\..+$", email) and email:
         raise BackendError("Invalid email address")
-    if not re.search(r'^\d{6}$', postcode) and postcode:
+    if not re.search(r'^\d{3,10}$', postcode) and postcode:
         raise BackendError("Invalid postcode, it should be in 6 digit number")
 
 
@@ -42,4 +43,15 @@ def validate_update_user(user):
     validate_user(user, is_update=True)
 
 
+def generate_fake_users():
+    fake = Faker('en_US')
+    user = lambda age: {'name': fake.name(), 'age': age,
+                        'birthday': fake.date_of_birth(minimum_age=age, maximum_age=age).strftime('%Y-%m-%d'),
+                        'email': fake.email(), 'university': 'NUS',
+                        'address': fake.address(), 'postcode': fake.postcode()}
+    return [user(fake.random_int(min=18, max=65))
+            for _ in range(3)]
 
+
+if __name__ == "__main__":
+    print(generate_fake_users())
