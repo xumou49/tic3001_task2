@@ -32,11 +32,11 @@ def get_user(uid):
 @user_list_bp.route('/users', methods=['POST'])
 def create_user():
     try:
-        validate_create_user(request.json.get('data', None))
+        validate_create_user(request.json.get('data', request.json))
     except BackendError as e:
         return jsonify({'error_message': str(e)}), 404
     return jsonify({
-        'users': User(**request.json).save().to_dict()
+        'users': User(**request.json.get('data', request.json)).save().reload().to_dict()
     }), 201
 
 

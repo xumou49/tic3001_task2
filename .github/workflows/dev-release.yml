@@ -2,7 +2,7 @@ name: Python tests
 
 on:
   push:
-    branches: [ main ]
+    branches: [ main, task2_web_app, task3_auth ]
 
 jobs:
   build:

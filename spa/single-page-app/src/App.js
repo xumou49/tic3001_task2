@@ -94,9 +94,7 @@ const App = () => {
     const handleAdd = async () => {
         const addUser = (user) => {
             return axios.post('http://127.0.0.1:5000/api/user-list/users', {
-                data: {
                     ...user
-                }
             })
                 .then(response => response.data)
                 .catch(error => {
@@ -109,7 +107,7 @@ const App = () => {
                 name: faker.name.fullName(),
                 age: age,
                 address: faker.address.streetAddress(),
-                birthday: faker.date.past(age),
+                birthday: faker.date.past(age).toISOString().slice(0, 10),
                 email: faker.internet.email(),
                 university: 'NUS',
                 postcode: faker.address.zipCode(),

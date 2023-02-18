@@ -1,6 +1,7 @@
 import re
 from faker import Faker
 from application.services.exceptions import BackendError
+from application.models.user import User
 
 
 def validate_user(user, is_update=False):
@@ -13,6 +14,10 @@ def validate_user(user, is_update=False):
     if not (email := user.get('email', None)):
         if not is_update:
             raise BackendError("Email is not defined")
+    else:
+        if not is_update:
+            if User.objects(email=email).first():
+                raise BackendError("User's email already exists")
     if not (birthday := user.get('birthday', None)):
         if not is_update:
             raise BackendError("Birthday is not defined")
@@ -32,7 +37,7 @@ def validate_user(user, is_update=False):
     if not re.search(r"^[^@]+@[^.]+\..+$", email) and email:
         raise BackendError("Invalid email address")
     if not re.search(r'^\d{3,10}$', postcode) and postcode:
-        raise BackendError("Invalid postcode, it should be in 6 digit number")
+        raise BackendError("Invalid postcode, it should be between 3-10 digit number")
 
 
 def validate_create_user(user):
