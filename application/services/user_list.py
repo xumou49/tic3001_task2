@@ -26,7 +26,7 @@ def validate_user(user, is_update=False):
             raise BackendError("University is not defined")
     if not user.get('address', None):
         if not is_update:
-            raise BackendError('Address', None)
+            raise BackendError('Address is not defined')
     if not (postcode := user.get('postcode', None)):
         if not is_update:
             raise BackendError("Postcode is not defined")
