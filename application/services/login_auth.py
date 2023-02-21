@@ -16,7 +16,7 @@ def generate_fake_users():
             User(**dict(name="Bob", age=22, birthday='2002-02-02', email='bob@gmail.com',
                         university='NUS', address="Street 02", postcode="222222")).save(),
             User(**dict(name="Clara", age=23, birthday='2001-03-03', email='clara@gmail.com',
-                        university='NUS', address="Street 03", postcode="222222")).save()]
+                        university='NUS', address="Street 03", postcode="333333")).save()]
 
 
 def generate_predefined_login_creds():

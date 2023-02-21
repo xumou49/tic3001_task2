@@ -26,6 +26,30 @@ def test_client(_test_app):
     yield client
 
 
+@pytest.fixture(name='_temp_user_token')
+def temp_user_token(_test_client):
+    return create_test_token(_test_client)
+
+
+def create_test_token(_test_client):
+    variables = {
+        "username": "alice@gmail.com",
+        "password": "123456"
+    }
+    res = _test_client.post('/api/login-auth/login', json=variables)
+    token = res.json['access_token']
+    return token
+
+
+def client_auth_header(token):
+    headers = dict()
+    headers['Authorization'] = 'Bearer {}'.format(token)
+    headers['Accept'] = 'application/json'
+    headers['Content-Type'] = 'application/json'
+
+    return headers
+
+
 @pytest.fixture(name='_temp_user_list')
 def temp_user_list(_test_app):
     u1 = User(**dict(name="Alice",
