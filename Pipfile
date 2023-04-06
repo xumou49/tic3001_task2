@@ -12,6 +12,8 @@ pymongo = "==3.12.3"
 pytest = "*"
 flask-cors = "*"
 faker = "*"
+requests = "*"
+redis = "*"
 
 [dev-packages]
 pytest = "*"
